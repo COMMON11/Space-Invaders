@@ -29,6 +29,17 @@ function Game() {
       return new Shot(this.x + 20, this.y + 20, dy);
     };
 
+    GameObject.prototype.isHitBy = function (shot) {
+      function between(x, a, b) {
+        return x >= a && x <= b;
+      }
+      return (
+        this.active &&
+        between(shot.x, this.x, this.x + 40) &&
+        between(shot.y, this.y, this.y + 20)
+      );
+    };
+
     function Shot(x, y, dy) {
       this.x = x;
       this.y = y;
@@ -96,11 +107,32 @@ function Game() {
         let r = active[Math.floor(Math.random() * active.length)];
         invaderShot = r.fire(20);
       }
+
+      if (playerShot) {
+        const hit = invader.find((inv) => inv.isHitBy(playerShot));
+        if (hit) {
+          hit.active = false;
+          playerShot = null;
+        } else {
+          if (!playerShot.move()) {
+            playerShot = null;
+          }
+        }
+      }
     }
 
     function game() {
       move();
       draw();
+
+      if (isGameOver()) {
+        clearInterval(interval);
+        alert("Game Over!");
+      }
+    }
+
+    function isGameOver() {
+      return player.isHitBy(invaderShot) || invader.find((inv) => inv.y > 500);
     }
 
     function start() {
@@ -111,6 +143,9 @@ function Game() {
         }
         if ((e.key === "ArrowRight" || e.key === "d") && player.x <= 540) {
           player.move(10, 0);
+        }
+        if (e.key === " " && !playerShot) {
+          playerShot = player.fire(-20);
         }
       });
       interval = setInterval(game, 50);
