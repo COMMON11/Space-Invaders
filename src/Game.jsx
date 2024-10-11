@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import Spaceship from "./assets/Spaceship.svg";
 import Invader from "./assets/Invader.svg";
 import ShotImage from "./assets/Shot.svg";
-function Game() {
+function Game(props) {
   const canvasRef = useRef(null);
   let interval = null;
-  const [resume, setResume] = useState(true);
-  const canvasSize = { width: 600, height: 800 };
+  const [resume, setResume] = useState(false);
+  const canvasSize = props.canvasSize;
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
@@ -176,19 +176,23 @@ function Game() {
       });
       interval = setInterval(game, 50);
     }
-    if (resume) {
-      start();
-    }
+    start();
   }, [canvasRef]);
 
   return (
     <>
       <canvas
-        className="bg-black ml-64 my-10 border-2 border-white"
+        className="w-[600px] h-[800px] bg-black border-2 border-white"
         width={canvasSize.width}
         height={canvasSize.height}
         ref={canvasRef}
       ></canvas>
+      {/* <button
+        onClick={handleClick}
+        className="border-2 text-white border-white z-10"
+      >
+        Start!
+      </button> */}
     </>
   );
 }
