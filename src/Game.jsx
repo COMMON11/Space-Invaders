@@ -2,15 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import Spaceship from "./assets/Spaceship.svg";
 import Invader from "./assets/Invader.svg";
 import ShotImage from "./assets/Shot.svg";
+import Background from "./assets/BG.svg";
 function Game(props) {
   const canvasRef = useRef(null);
+  const [ctx, setCtx] = useState(null);
   let interval = null;
   const [resume, setResume] = useState(false);
   const canvasSize = props.canvasSize;
 
   useEffect(() => {
-    const ctx = canvasRef.current.getContext("2d");
+    setCtx(canvasRef.current.getContext("2d"));
+  }, [canvasRef]);
 
+  useEffect(() => {
     //* Represents functions of both the Player and Invaders
     function GameObject(x, y, img) {
       this.x = x;
@@ -62,6 +66,7 @@ function Game(props) {
 
     //* All variable declarations
     let invadersDx = -5;
+    let invadersDxFactor = 1;
 
     const invader = [];
 
@@ -77,6 +82,9 @@ function Game(props) {
     let invaderShot = null;
     const shotImage = new Image();
     shotImage.src = ShotImage;
+
+    let bgImage = new Image();
+    bgImage.src = Background;
 
     //* Set the initial position of the invaders
     function init() {
@@ -94,7 +102,7 @@ function Game(props) {
     //* Draws the canvas, player, invaders and shots
     function draw() {
       ctx.fillStyle = "#00000";
-      ctx.fillRect(0, 0, 600, 800);
+      ctx.drawImage(bgImage, 0, 0, 600, 800);
       invader.forEach((invader) => invader.draw(ctx));
       player.draw(ctx);
 
@@ -111,7 +119,9 @@ function Game(props) {
       if (leftX < 20 || rightX > canvasSize.width - 60) {
         invadersDx = -invadersDx;
       }
-      invader.forEach((invader) => invader.move(invadersDx, 0.2));
+      invader.forEach((invader) =>
+        invader.move(invadersDx * invadersDxFactor, 0.2)
+      );
 
       if (invaderShot && !invaderShot.move()) {
         invaderShot = null;
@@ -123,12 +133,14 @@ function Game(props) {
         let r = active[Math.floor(Math.random() * active.length)];
         invaderShot = r.fire(10);
       }
+
       //? Checks if any invader is hit by the player's shot
       if (playerShot) {
         const hit = invader.find((inv) => inv.isHitBy(playerShot));
         if (hit) {
           hit.active = false;
           playerShot = null;
+          invadersDxFactor = invadersDxFactor * 1.05;
         } else {
           if (!playerShot.move()) {
             playerShot = null;
@@ -176,8 +188,10 @@ function Game(props) {
       });
       interval = setInterval(game, 50);
     }
-    start();
-  }, [canvasRef]);
+    if (ctx) {
+      start();
+    }
+  }, [ctx]);
 
   return (
     <>

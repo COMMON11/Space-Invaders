@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <div className="flex flex-col press-start-2p-regular items-center">
-        <hearder className="text-white text-5xl mt-4">Space Invaders!</hearder>
+        <header className="text-white text-5xl mt-4">Space Invaders!</header>
         <div className="flex w-[900px] h-[800px] mt-10">
           <Game canvasSize={canvasSize} />
           <Scoreboard canvasSize={canvasSize} />

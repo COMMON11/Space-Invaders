@@ -5,7 +5,37 @@ export default function Scoreboard(props) {
       <div className="flex flex-col items-center w-[300px] h-[800px] border-2 border-white">
         <div className="flex flex-col justify-between h-full">
           <div>
-            <p className="press-start-2p-regular text-white mt-60 text-3xl text-center">
+            <p className="text-white">Controls:</p>
+            <p className="press-start-2p-regular text-white text-sm pt-3">
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                {"<"}
+              </span>{" "}
+              or{" "}
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                A
+              </span>{" "}
+              <span> to Move left</span>{" "}
+            </p>
+            <p className="press-start-2p-regular text-white text-sm pt-3">
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                {">"}
+              </span>{" "}
+              or{" "}
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                D
+              </span>{" "}
+              <span> to Move right</span>
+            </p>
+            <p className="press-start-2p-regular text-white text-sm pt-3">
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                Spacebar
+              </span>{" "}
+              to shoot
+            </p>
+          </div>
+
+          <div>
+            <p className="press-start-2p-regular text-white text-3xl text-center">
               Score
             </p>
             <p className="press-start-2p-regular text-white mt-4 text-4xl text-center">
