@@ -1,5 +1,10 @@
+import { useEffect, useState } from "react";
 import Spaceship from "./assets/Spaceship.svg";
-export default function Scoreboard(props) {
+export default function Scoreboard({ score }) {
+  // useEffect(() => {
+  //   const audio = new Audio("/assets/sounds/explosion.wav");
+  //   audio.play();
+  // }, [score]);
   return (
     <>
       <div className="flex flex-col items-center w-[300px] h-[800px] border-2 border-white">
@@ -39,7 +44,7 @@ export default function Scoreboard(props) {
               Score
             </p>
             <p className="press-start-2p-regular text-white mt-4 text-4xl text-center">
-              0
+              {score}
             </p>
             <p className="press-start-2p-regular text-white mt-10 text-3xl text-center">
               Hi-Score
