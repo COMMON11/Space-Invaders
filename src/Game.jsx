@@ -9,62 +9,66 @@ function Game(props) {
   const canvasRef = useRef(null);
   const [ctx, setCtx] = useState(null);
   const canvasSize = props.canvasSize;
-  let interval = null;
+  var interval;
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [paused, setPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     setCtx(canvasRef.current.getContext("2d"));
   }, [canvasRef]);
 
   //* Represents functions of both the Player and Invaders
-  function GameObject(x, y, img) {
-    this.x = x;
-    this.y = y;
-    this.img = img;
-    this.active = true;
+  class GameObject {
+    constructor(x, y, img) {
+      this.x = x;
+      this.y = y;
+      this.img = img;
+      this.active = true;
 
-    this.draw = (ctx) => {
-      //? drawImage is used instead of fillRect because "fillStyle" changes color of bg aswell
-      this.active && ctx.drawImage(this.img, this.x, this.y, 50, 50);
-    };
+      this.draw = (ctx) => {
+        //? drawImage is used instead of fillRect because "fillStyle" changes color of bg aswell
+        this.active && ctx.drawImage(this.img, this.x, this.y, 50, 50);
+      };
 
-    this.move = function (dx, dy) {
-      this.x += dx;
-      this.y += dy;
-    };
+      this.move = function (dx, dy) {
+        this.x += dx;
+        this.y += dy;
+      };
 
-    this.fire = (dy, img) => {
-      return new Shot(this.x + 20, this.y, dy, img);
-    };
+      this.fire = (dy, img) => {
+        return new Shot(this.x + 20, this.y, dy, img);
+      };
 
-    this.isHitBy = (shot) => {
-      function between(x, a, b) {
-        return x >= a && x <= b;
-      }
-      return (
-        this.active &&
-        between(shot.x, this.x, this.x + 40) &&
-        between(shot.y, this.y, this.y + 20)
-      );
-    };
+      this.isHitBy = (shot) => {
+        function between(x, a, b) {
+          return x >= a && x <= b;
+        }
+        return (
+          this.active &&
+          between(shot.x, this.x, this.x + 40) &&
+          between(shot.y, this.y, this.y + 20)
+        );
+      };
+    }
   }
 
   //* All functions of Shot
-  function Shot(x, y, dy, img) {
-    this.x = x;
-    this.y = y;
-    this.dy = dy;
+  class Shot {
+    constructor(x, y, dy, img) {
+      this.x = x;
+      this.y = y;
+      this.dy = dy;
 
-    this.move = () => {
-      this.y += this.dy;
-      return this.y > 0 && this.y < canvasSize.height - 20;
-    };
+      this.move = () => {
+        this.y += this.dy;
+        return this.y > 0 && this.y < canvasSize.height - 20;
+      };
 
-    this.draw = (ctx) => {
-      ctx.drawImage(img, this.x, this.y, 3, 20);
-    };
+      this.draw = (ctx) => {
+        ctx.drawImage(img, this.x, this.y, 3, 20);
+      };
+    }
   }
 
   //* All variable declarations
@@ -150,10 +154,13 @@ function Game(props) {
       if (hit) {
         hit.active = false;
         playerShot = null;
-        invadersDxFactor = invadersDxFactor * 1.05;
+        invadersDxFactor = invadersDxFactor + 0.05;
+        console.log(invadersDxFactor);
         setScore((score) => score + 100);
         if (invader.every((i) => !i.active)) {
-          invadersDxFactor = invadersDxFactor / 1.5;
+          invadersDxFactor = invadersDxFactor / 1.2;
+          setScore((score) => score + 1000);
+          setInvader((invader.length = 0));
           init();
         }
       } else {
@@ -166,8 +173,10 @@ function Game(props) {
 
   //* Main game loop called every 50ms
   function game() {
-    move();
-    draw();
+    if (!isPaused) {
+      move();
+      draw();
+    }
 
     //* Decides what to do when game ends
     if (isGameOver()) {
@@ -178,6 +187,12 @@ function Game(props) {
 
   //* Checks if the game is over, when player is hit or invaders are too close
   function isGameOver() {
+    if (player.isHitBy(invaderShot)) {
+      console.log("coz of shot");
+    }
+    if (invader.find((inv) => inv.y > canvasSize.height - 100)) {
+      console.log("coz of invader too close");
+    }
     return (
       player.isHitBy(invaderShot) ||
       invader.find((inv) => inv.y > canvasSize.height - 100)
@@ -203,22 +218,19 @@ function Game(props) {
       }
     });
     interval = setInterval(function () {
-      if (!paused) {
-        game();
-      }
+      game();
     }, 25);
   }
 
-  const handleClick = () => {
-    setPaused((prevPaused) => !prevPaused);
-    console.log(paused);
-  };
+  function handlePauseClick() {
+    setIsPaused(!isPaused);
+  }
 
   useEffect(() => {
-    if (ctx) {
+    if (ctx && !isPaused) {
       start();
     }
-  }, [ctx]);
+  }, [ctx, isPaused]);
 
   return (
     <>
@@ -230,13 +242,10 @@ function Game(props) {
           ref={canvasRef}
         ></canvas>
         <Scoreboard score={score} canvasSize={canvasSize} />
-        <button
-          onClick={handleClick}
-          className="border-2 text-white border-white z-10"
-        >
-          Pause
-        </button>
       </div>
+      <button className="text-white" onClick={handlePauseClick}>
+        {isPaused ? "Resume" : "Pause"}
+      </button>
     </>
   );
 }
