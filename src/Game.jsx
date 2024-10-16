@@ -9,10 +9,9 @@ function Game(props) {
   const canvasRef = useRef(null);
   const [ctx, setCtx] = useState(null);
   const canvasSize = props.canvasSize;
-  var interval;
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
 
   useEffect(() => {
     setCtx(canvasRef.current.getContext("2d"));
@@ -100,7 +99,7 @@ function Game(props) {
   function init() {
     const InvaderImage = new Image();
     InvaderImage.src = Invader;
-    //* Creates 3 rows and 8 columns of invaders
+    // Creates 3 rows and 8 columns of invaders
     for (let y = 0; y < 3; y++) {
       for (let x = 0; x < 8; x++) {
         setInvader(
@@ -157,6 +156,8 @@ function Game(props) {
         invadersDxFactor = invadersDxFactor + 0.05;
         console.log(invadersDxFactor);
         setScore((score) => score + 100);
+
+        // Next Level
         if (invader.every((i) => !i.active)) {
           invadersDxFactor = invadersDxFactor / 1.2;
           setScore((score) => score + 1000);
@@ -173,15 +174,12 @@ function Game(props) {
 
   //* Main game loop called every 50ms
   function game() {
-    if (!isPaused) {
-      move();
-      draw();
-    }
+    move();
+    draw();
 
-    //* Decides what to do when game ends
+    // Decides what to do when game ends
     if (isGameOver()) {
-      clearInterval(interval);
-      alert("Game Over!");
+      gamePause();
     }
   }
 
@@ -214,23 +212,42 @@ function Game(props) {
         playerShot = player.fire(-20, playerShotImage);
       }
       if (e.key === "p" || e.key === "P") {
-        handleClick();
+        console.log("Pause called");
+        gamePause();
+      }
+      if (e.key === "Enter") {
+        console.log("Resume called");
+        gameStart();
+      }
+      if (e.key === "r" || e.key === "R") {
+        console.log("Restart called");
+        gameResume();
       }
     });
-    interval = setInterval(function () {
-      game();
-    }, 25);
+    // gameStart();
+  }
+  var interval;
+  let counter = 0;
+  function gameStart() {
+    interval = setInterval(game, 25);
+    console.log(interval);
+    counter = interval;
   }
 
-  function handlePauseClick() {
-    setIsPaused(!isPaused);
+  function gamePause() {
+    clearInterval(interval);
+    console.log(interval);
+  }
+
+  function gameResume() {
+    interval = setInterval(game, 25);
   }
 
   useEffect(() => {
-    if (ctx && !isPaused) {
+    if (ctx) {
       start();
     }
-  }, [ctx, isPaused]);
+  }, [ctx]);
 
   return (
     <>
@@ -243,9 +260,6 @@ function Game(props) {
         ></canvas>
         <Scoreboard score={score} canvasSize={canvasSize} />
       </div>
-      <button className="text-white" onClick={handlePauseClick}>
-        {isPaused ? "Resume" : "Pause"}
-      </button>
     </>
   );
 }
