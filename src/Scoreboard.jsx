@@ -7,7 +7,9 @@ export default function Scoreboard({ score }) {
   // }, [score]);
   return (
     <>
-      <div className="flex flex-col items-center w-[300px] h-[800px] border-2 border-white">
+      <div
+        className={`flex flex-col items-center w-[300px] h-[800px] border-2 border-white`}
+      >
         <div className="flex flex-col justify-between h-full">
           <div>
             <p className="text-white">Controls:</p>

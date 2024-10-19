@@ -5,13 +5,18 @@ import ShotImage from "./assets/Shot.svg";
 import Background from "./assets/BG.svg";
 import PlayerShotImage from "./assets/PlayerShot.svg";
 import Scoreboard from "./Scoreboard";
+import Intro from "./Intro";
+import { Pause } from "./Intro";
 function Game(props) {
   const canvasRef = useRef(null);
   const [ctx, setCtx] = useState(null);
   const canvasSize = props.canvasSize;
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [isPaused, setIsPaused] = useState(true);
+  const [canvasIndex, setConvasIndex] = useState(-1);
+  const [showIntro, setShowIntro] = useState(true);
+  const [showPause, setShowPause] = useState(false);
+  const [canvasMargin, setCanvasMargin] = useState(-800);
 
   useEffect(() => {
     setCtx(canvasRef.current.getContext("2d"));
@@ -45,8 +50,8 @@ function Game(props) {
         }
         return (
           this.active &&
-          between(shot.x, this.x, this.x + 40) &&
-          between(shot.y, this.y, this.y + 20)
+          between(shot.x, this.x, this.x + 50) &&
+          between(shot.y, this.y, this.y + 50)
         );
       };
     }
@@ -73,6 +78,7 @@ function Game(props) {
   //* All variable declarations
   let invadersDx = -2;
   let invadersDxFactor = 1;
+  let invaderDyFactor = 1;
 
   const [invader, setInvader] = useState([]);
 
@@ -114,8 +120,9 @@ function Game(props) {
   function draw() {
     ctx.fillStyle = "#00000";
     ctx.drawImage(bgImage, 0, 0, 600, 800);
-    invader.forEach((invader) => invader.draw(ctx));
-    player.draw(ctx);
+
+    invader.forEach((invader) => setTimeout(invader.draw(ctx)), 50),
+      player.draw(ctx);
 
     invaderShot && invaderShot.draw(ctx);
     playerShot && playerShot.draw(ctx);
@@ -131,7 +138,7 @@ function Game(props) {
       invadersDx = -invadersDx;
     }
     invader.forEach((invader) =>
-      invader.move(invadersDx * invadersDxFactor, 0.2)
+      invader.move(invadersDx * invadersDxFactor, 0.2 * invaderDyFactor)
     );
 
     if (invaderShot && !invaderShot.move()) {
@@ -154,12 +161,13 @@ function Game(props) {
         hit.active = false;
         playerShot = null;
         invadersDxFactor = invadersDxFactor + 0.05;
-        console.log(invadersDxFactor);
+        // console.log(invadersDxFactor);
         setScore((score) => score + 100);
 
         // Next Level
         if (invader.every((i) => !i.active)) {
           invadersDxFactor = invadersDxFactor / 1.2;
+          invaderDyFactor = invaderDyFactor + 0.2;
           setScore((score) => score + 1000);
           setInvader((invader.length = 0));
           init();
@@ -226,21 +234,34 @@ function Game(props) {
     });
     // gameStart();
   }
-  var interval;
+  var interval = 0;
   let counter = 0;
   function gameStart() {
-    interval = setInterval(game, 25);
-    console.log(interval);
-    counter = interval;
+    if (interval === 0) {
+      interval = setInterval(game, 25);
+      counter = interval;
+      setShowIntro(false);
+      setCanvasMargin(0);
+      // setConvasIndex(1);
+    }
   }
 
   function gamePause() {
     clearInterval(interval);
-    console.log(interval);
+    counter = 0;
+    setShowPause(true);
+    // setConvasIndex(-1);
+    setCanvasMargin(-800);
   }
 
   function gameResume() {
-    interval = setInterval(game, 25);
+    if (counter != interval) {
+      interval = setInterval(game, 25);
+      counter = interval;
+      setShowPause(false);
+      // setConvasIndex(1);
+      setCanvasMargin(0);
+    }
   }
 
   useEffect(() => {
@@ -252,12 +273,17 @@ function Game(props) {
   return (
     <>
       <div className="flex w-[900px] h-[800px] mt-10">
-        <canvas
-          className="w-[600px] h-[800px] bg-black border-2 border-white"
-          width={canvasSize.width}
-          height={canvasSize.height}
-          ref={canvasRef}
-        ></canvas>
+        <div className="w-[600px] h-[800px]">
+          {showIntro && <Intro />}
+          {showPause && <Pause />}
+          <canvas
+            className={`w-[600px] h-[800px] bg-black border-2 border-white absolute mt-[${canvasMargin}px]`}
+            width={canvasSize.width}
+            height={canvasSize.height}
+            ref={canvasRef}
+            style={{ zIndex: canvasIndex }}
+          ></canvas>
+        </div>
         <Scoreboard score={score} canvasSize={canvasSize} />
       </div>
     </>
