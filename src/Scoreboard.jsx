@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import Spaceship from "./assets/Spaceship.svg";
-export default function Scoreboard({ score }) {
-  // useEffect(() => {
-  //   const audio = new Audio("/assets/sounds/explosion.wav");
-  //   audio.play();
-  // }, [score]);
+export default function Scoreboard({ score, lives }) {
+  const spaceshipArray = Array.from({ length: lives }, (_, index) => (
+    <img key={index} src={Spaceship} alt="Spaceship" className="h-8 w-8" />
+  ));
   return (
     <>
       <div
@@ -39,6 +38,12 @@ export default function Scoreboard({ score }) {
               </span>{" "}
               to shoot
             </p>
+            <p className="press-start-2p-regular text-white text-sm pt-3">
+              <span className="border-2 border-gray-600 bg-gray-800 text-white">
+                P
+              </span>{" "}
+              to pause
+            </p>
           </div>
 
           <div>
@@ -59,21 +64,7 @@ export default function Scoreboard({ score }) {
             <p className="press-start-2p-regular text-white ml-2 mt-3 mr-3">
               lives:
             </p>
-            <img
-              src={Spaceship}
-              alt="Spaceship"
-              className="h-[50px] w-[50px]"
-            />
-            <img
-              src={Spaceship}
-              alt="Spaceship"
-              className="h-[50px] w-[50px]"
-            />
-            <img
-              src={Spaceship}
-              alt="Spaceship"
-              className="h-[50px] w-[50px]"
-            />
+            {spaceshipArray}
           </div>
         </div>
       </div>

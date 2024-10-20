@@ -12,12 +12,12 @@ function Game(props) {
   const [ctx, setCtx] = useState(null);
   const canvasSize = props.canvasSize;
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
   const [canvasIndex, setConvasIndex] = useState(-1);
   const [showIntro, setShowIntro] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const [canvasMargin, setCanvasMargin] = useState(-800);
-
+  const [lives, setLives] = useState(3);
+  var Lives;
   useEffect(() => {
     setCtx(canvasRef.current.getContext("2d"));
   }, [canvasRef]);
@@ -122,7 +122,7 @@ function Game(props) {
     ctx.drawImage(bgImage, 0, 0, 600, 800);
 
     invader.forEach((invader) => setTimeout(invader.draw(ctx)), 50),
-      player.draw(ctx);
+      player.active && player.draw(ctx);
 
     invaderShot && invaderShot.draw(ctx);
     playerShot && playerShot.draw(ctx);
@@ -189,20 +189,30 @@ function Game(props) {
     if (isGameOver()) {
       gamePause();
     }
+    if (lives == 0) {
+      console.log("Game Over!");
+    }
   }
 
   //* Checks if the game is over, when player is hit or invaders are too close
   function isGameOver() {
     if (player.isHitBy(invaderShot)) {
       console.log("coz of shot");
+      PlayerIsHit();
     }
     if (invader.find((inv) => inv.y > canvasSize.height - 100)) {
       console.log("coz of invader too close");
     }
-    return (
-      player.isHitBy(invaderShot) ||
-      invader.find((inv) => inv.y > canvasSize.height - 100)
-    );
+    return Lives <= 0 || invader.find((inv) => inv.y > canvasSize.height - 100);
+  }
+
+  function PlayerIsHit() {
+    Lives -= 1;
+    setLives((lives) => lives - 1);
+    player.active = false;
+    setTimeout(() => {
+      player.active = true;
+    }, 300);
   }
 
   //* Starts the game
@@ -210,13 +220,21 @@ function Game(props) {
     init();
     //? EventListener for player controls
     document.addEventListener("keydown", function (e) {
-      if ((e.key === "ArrowLeft" || e.key === "a") && player.x >= 10) {
+      if (
+        (e.key === "ArrowLeft" || e.key === "a") &&
+        player.x >= 10 &&
+        player.active
+      ) {
         player.move(-10, 0);
       }
-      if ((e.key === "ArrowRight" || e.key === "d") && player.x <= 540) {
+      if (
+        (e.key === "ArrowRight" || e.key === "d") &&
+        player.x <= 540 &&
+        player.active
+      ) {
         player.move(10, 0);
       }
-      if (e.key === " " && !playerShot) {
+      if (e.key === " " && !playerShot && player.active) {
         playerShot = player.fire(-20, playerShotImage);
       }
       if (e.key === "p" || e.key === "P") {
@@ -232,7 +250,7 @@ function Game(props) {
         gameResume();
       }
     });
-    // gameStart();
+    Lives = lives;
   }
   var interval = 0;
   let counter = 0;
@@ -242,7 +260,6 @@ function Game(props) {
       counter = interval;
       setShowIntro(false);
       setCanvasMargin(0);
-      // setConvasIndex(1);
     }
   }
 
@@ -250,7 +267,6 @@ function Game(props) {
     clearInterval(interval);
     counter = 0;
     setShowPause(true);
-    // setConvasIndex(-1);
     setCanvasMargin(-800);
   }
 
@@ -259,7 +275,6 @@ function Game(props) {
       interval = setInterval(game, 25);
       counter = interval;
       setShowPause(false);
-      // setConvasIndex(1);
       setCanvasMargin(0);
     }
   }
@@ -276,15 +291,16 @@ function Game(props) {
         <div className="w-[600px] h-[800px]">
           {showIntro && <Intro />}
           {showPause && <Pause />}
+
           <canvas
-            className={`w-[600px] h-[800px] bg-black border-2 border-white absolute mt-[${canvasMargin}px]`}
+            className={`w-[600px] h-[800px] bg-black border-2 border-white relative`}
             width={canvasSize.width}
             height={canvasSize.height}
             ref={canvasRef}
-            style={{ zIndex: canvasIndex }}
+            style={{ zIndex: -1, marginTop: `${canvasMargin}px` }}
           ></canvas>
         </div>
-        <Scoreboard score={score} canvasSize={canvasSize} />
+        <Scoreboard score={score} lives={lives} />
       </div>
     </>
   );
