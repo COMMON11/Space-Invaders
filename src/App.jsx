@@ -1,5 +1,4 @@
 import Game from "./Game";
-import Scoreboard from "./Scoreboard";
 function App() {
   const canvasSize = { width: 600, height: 800 };
   return (
