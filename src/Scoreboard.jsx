@@ -52,7 +52,7 @@ export default function Scoreboard({ score, lives, HiScore }) {
           </div>
 
           <div>
-            <p className="press-start-2p-regular text-white text-3xl text-center">
+            <p className="press-start-2p-regular text-white text-3xl text-center -mt-32">
               Score
             </p>
             <p className="press-start-2p-regular text-white mt-4 text-4xl text-center">
