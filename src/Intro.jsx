@@ -36,3 +36,29 @@ export function Pause({ pauseIndex }) {
     </div>
   );
 }
+
+export function End() {
+  return (
+    <div
+      className={`text-white press-start-2p-regular relative flex flex-col border-2 border-white w-[600px] h-[800px] text-center `}
+    >
+      <p className="text-5xl mt-[350px]">Game Over!</p>
+      <p className="text-sm mt-4">The game will reset in 5 seconds</p>
+    </div>
+  );
+}
+
+export function NextLevel() {
+  return (
+    <div
+      className={`text-white press-start-2p-regular relative flex flex-col border-2 border-white w-[600px] h-[800px] text-center `}
+    >
+      <p className="text-5xl mt-[500px] z-10 drop-shadow-[0_1.2px_1.2px_#FFFFFF]">
+        Next Level!
+      </p>
+      <p className="text-5xl text-black drop-shadow-[0_1.2px_1.2px_#FFFFFF] -mt-[40px] ml-[10px]">
+        Next Level!
+      </p>
+    </div>
+  );
+}

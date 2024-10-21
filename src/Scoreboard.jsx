@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import Spaceship from "./assets/Spaceship.svg";
-export default function Scoreboard({ score, lives }) {
-  const spaceshipArray = Array.from({ length: lives }, (_, index) => (
-    <img key={index} src={Spaceship} alt="Spaceship" className="h-8 w-8" />
+export default function Scoreboard({ score, lives, HiScore }) {
+  const spaceshipArray = Array.from({ length: lives - 1 }, (_, index) => (
+    <img
+      key={index}
+      src={Spaceship}
+      alt="Spaceship"
+      className="h-[50px] w-[50px]"
+    />
   ));
   return (
     <>
@@ -57,11 +62,11 @@ export default function Scoreboard({ score, lives }) {
               Hi-Score
             </p>
             <p className="press-start-2p-regular text-white mt-4 text-4xl text-center">
-              0
+              {HiScore}
             </p>
           </div>
           <div className="flex">
-            <p className="press-start-2p-regular text-white ml-2 mt-3 mr-3">
+            <p className="press-start-2p-regular text-white ml-2 mt-3 mr-3 mb-5">
               lives:
             </p>
             {spaceshipArray}
