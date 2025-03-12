@@ -1,8 +1,6 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Space Invaders game
 
-Currently, two official plugins are available:
+In this project, React is used to create a top-down 2D shooter game inspired by the popular arcade game "Space Invaders".
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Check out the game at this link: [Space-Invaders](https://common11.github.io/Space-Invaders/)
